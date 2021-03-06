@@ -1,0 +1,118 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+wake_on_lan:
+
+# Text to speech
+tts:
+  - platform: amazon_polly
+    aws_access_key_id: !secret aws_access_key
+    aws_secret_access_key: !secret aws_access_secret
+    text_type: ssml
+    region_name: 'eu-west-1'
+    engine: neural
+    voice: Matthew
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+homeassistant:
+  internal_url: http://192.168.0.172:8123/
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 127.0.0.1
+      allow_bypass_login: true
+
+# IFTTT Webhooks
+ifttt:
+  key:
+    KEY_1: !secret ifttt_key
+
+# TV
+webostv:
+  host: 192.168.50.156
+  name: Living Room TV
+  turn_on_action:
+    service: wake_on_lan.send_magic_packet
+    data:
+        mac: '44:cb:8b:54:68:98'
+        broadcast_address: '192.168.50.156'
+  customize:
+    sources:
+        - AV
+        - Amazon Prime Video
+        - Apple TV
+        - Component
+        - Disney+
+        - Google Play Movies & TV
+        - HDMI 1
+        - HDMI 3
+        - LG Content Store
+        - Live TV
+        - Music
+        - Netflix
+        - Photo & Video
+        - Roku
+        - Spotify - Music and Podcasts
+        - Streamz
+        - TV VLAANDEREN
+        - Web Browser
+        - YouTube
+media_player:
+
+notify:
+
+# Custom sensors.
+sensor:
+  - platform: command_line
+    name: vpn_country
+    command: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "sed -n -e 's/.*remote \(.*\)-ca-version-2.*/\1/p' /etc/openvpn/client.conf"
+    scan_interval: 2
+
+binary_sensor:
+  - platform: command_line
+    command: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "/bin/systemctl is-active openvpn@client | grep active"
+    name: "vpn_status"
+    device_class: connectivity
+    payload_on: "active"
+    payload_off: "inactive"
+    scan_interval: 2
+
+switch:
+  - platform: command_line
+    switches:
+      vpn:
+        command_on: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "sudo /etc/init.d/openvpn start"
+        command_off: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "sudo /etc/init.d/openvpn stop"
+
+input_select:
+  vpn_location:
+    name: VPN Location
+    options:
+      - "belgium"
+      - "brazil"
+      - "canada"
+      - "japan"
+      - "netherlands"
+      - "sweden"
+      - "switzerland"
+      - "uk"
+      - "usa"
+    icon: mdi:earth
+
+# Shell commands
+shell_command:
+  vpn_belgium: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh belgium
+  vpn_brazil: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh brazil
+  vpn_canada: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh canada_toronto
+  vpn_japan: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh japan_tokyo_2
+  vpn_netherlands: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh netherlands_amsterdam_2
+  vpn_sweden: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh sweden
+  vpn_switzerland: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh switzerland_2
+  vpn_uk: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh uk_london
+  vpn_usa: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' sudo /usr/local/bin/openvpn-change-servers.sh usa_san_francisco
