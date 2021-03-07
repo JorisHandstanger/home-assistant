@@ -2,3 +2,5 @@ secrets.yaml
 .storage/
 .ssh/
 tts/
+home-assistant_v2.db
+home-assistant.log

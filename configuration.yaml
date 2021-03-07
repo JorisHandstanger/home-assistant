@@ -10,7 +10,9 @@ lovelace:
     [ {url: /hacsfiles/kiosk-mode/kiosk-mode.js,                              type: module},
       {url: /hacsfiles/lovelace-card-mod/card-mod.js,                         type: module},
       {url: /hacsfiles/lovelace-hui-element/hui-element.js,                   type: module} ]
-    
+
+frontend:
+  themes: !include themes.yaml
 
 # Text to speech
 tts:
@@ -77,11 +79,42 @@ notify:
 
 # Custom sensors.
 sensor:
+  - platform: time_date
+    display_options: ['time', 'date']
   - platform: command_line
     name: vpn_country
     command: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "sed -n -e 's/.*remote \(.*\)-ca-version-2.*/\1/p' /etc/openvpn/client.conf"
     scan_interval: 2
-
+  - platform: template
+    sensors:
+        sidebar_greeting:
+            value_template: >
+                {% set time = now().hour %}
+                {% if time <= 1 %} Goedenacht {{'\U0001F611'}}
+                {% elif time <= 3 %} Goedenacht {{'\U0001F62A'}}
+                {% elif time <= 5 %} Goedenacht {{'\U0001F634'}}
+                {% elif time <= 7 %} Goedemorgen {{'\U0001F4A9'}}
+                {% elif time <= 9 %} Goedemorgen {{'\u2615\uFE0F'}}
+                {% elif time <= 10 %} Goedemorgen {{'\U0001F642'}}
+                {% elif time <= 13 %} Goedemiddag {{'\U0001F60A'}}
+                {% elif time <= 15 %} Goededag {{'\U0001F60E'}}
+                {% elif time <= 17 %} Goededag {{'\U0001F44B\U0001F3FB'}}
+                {% elif time <= 19 %} Goedenavond {{'\U0001F44B\U0001F3FB'}}
+                {% elif time <= 22 %} Goedenavond {{'\U0001F60C'}}
+                {% elif time <= 23 %} Goedenavond {{'\U0001F974'}}
+                {% else %} Goedenacht {{'\U0001F974'}}
+                {% endif %}
+        sidebar_day:
+            icon_template: mdi:calendar
+            value_template: >
+                {% set days = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'] %}
+                {{ days[now().weekday()] }}
+        sidebar_date:
+            icon_template: mdi:calendar
+            value_template: >
+                {% set months = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 
+                'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'] %}
+                {{ strptime(states('sensor.date'), '%Y-%m-%d').day }} {{ months[now().month-1] }}
 binary_sensor:
   - platform: command_line
     command: ssh -t -i /config/.ssh/id_rsa has@172.17.0.1 -o 'StrictHostKeyChecking=no' "/bin/systemctl is-active openvpn@client | grep active"
