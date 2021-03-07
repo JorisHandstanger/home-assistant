@@ -1,0 +1,99 @@
+views:
+  - path: default_view
+    title: Home
+    cards:
+      - type: entities
+        entities:
+          - entity: light.bedroom_joris_main
+            name: Joris main
+          - light.nachtlamp_1
+          - light.nachtlamp_2
+        title: Bedroom
+      - type: entities
+        entities:
+          - light.hue_go_1
+          - light.hue_go_2
+          - light.living_spot_2
+          - light.living_spot_4
+          - light.living_spot_1
+          - light.living_spot_3
+        title: Living Room
+      - type: media-control
+        entity: media_player.living_room_speaker
+      - type: entities
+        entities:
+          - binary_sensor.updater
+          - binary_sensor.vpn_status
+        title: Binary Sensor
+      - type: entities
+        entities:
+          - input_boolean.candle_mode
+        title: Input Boolean
+      - type: entities
+        entities:
+          - input_select.vpn_location
+        title: Input Select
+      - type: entities
+        entities:
+          - light.bedroom_joris
+          - light.entertainment_area_1
+          - light.living_room_hue
+        title: Light
+      - type: media-control
+        entity: media_player.bedroom_tv
+      - type: media-control
+        entity: media_player.living_room_tv
+      - type: media-control
+        entity: media_player.main_group
+      - type: entities
+        entities:
+          - person.joris_handstanger
+        title: Person
+      - type: entities
+        entities:
+          - script.living_room_off
+          - script.living_room_on
+          - script.vpn
+        title: Scripts
+      - type: entities
+        entities:
+          - sensor.vpn_country
+        title: Sensor
+      - type: entities
+        entities:
+          - sun.sun
+        title: Sun
+      - type: entities
+        entities:
+          - switch.vpn
+        title: Switch
+      - type: weather-forecast
+        entity: weather.home
+        show_forecast: false
+  - title: VPN
+    path: vpn
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entity
+            entity: sensor.vpn_country
+            name: Configured country
+            icon: 'hass:earth'
+          - type: horizontal-stack
+            cards:
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: switch.vpn
+                icon_height: 31px
+                show_state: true
+                name: VPN Status
+                show_icon: false
+                show_name: true
+              - type: entity
+                entity: binary_sensor.vpn_status
+                name: VPN Status
+          - type: entities
+            entities:
+              - input_select.vpn_location

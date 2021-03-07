@@ -1,1 +1,2 @@
-2021-03-06 19:33:22 WARNING (MainThread) [homeassistant.components.webostv] LG webOS TV 192.168.50.156 needs to be paired
+2021-03-07 01:54:29 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for hacs which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant.
+2021-03-07 01:54:41 WARNING (MainThread) [homeassistant.components.binary_sensor] Updating command_line binary_sensor took longer than the scheduled update interval 0:00:02
